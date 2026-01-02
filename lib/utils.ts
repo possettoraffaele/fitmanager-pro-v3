@@ -1,34 +1,58 @@
-import { format } from 'date-fns'
+import { format, parseISO } from 'date-fns';
+import { it } from 'date-fns/locale';
 
-export function formatDate(date: string | Date): string {
-  if (!date) return ''
-  return format(new Date(date), 'dd/MM/yyyy')
+export function formatDate(date: string | Date | null | undefined): string {
+  if (!date) return '';
+  
+  try {
+    const dateObj = typeof date === 'string' ? parseISO(date) : date;
+    return format(dateObj, 'dd/MM/yyyy', { locale: it });
+  } catch {
+    return '';
+  }
 }
 
-export function formatDateTime(date: string | Date): string {
-  if (!date) return ''
-  return format(new Date(date), 'dd/MM/yyyy HH:mm')
+export function formatDateTime(date: string | Date | null | undefined): string {
+  if (!date) return '';
+  
+  try {
+    const dateObj = typeof date === 'string' ? parseISO(date) : date;
+    return format(dateObj, 'dd/MM/yyyy HH:mm', { locale: it });
+  } catch {
+    return '';
+  }
 }
 
-export function generateToken(): string {
-  return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)
+export function formatDateLong(date: string | Date | null | undefined): string {
+  if (!date) return '';
+  
+  try {
+    const dateObj = typeof date === 'string' ? parseISO(date) : date;
+    return format(dateObj, 'd MMMM yyyy', { locale: it });
+  } catch {
+    return '';
+  }
+}
+
+export function calculateAge(birthDate: string | Date | null | undefined): number | null {
+  if (!birthDate) return null;
+  
+  try {
+    const birth = typeof birthDate === 'string' ? parseISO(birthDate) : birthDate;
+    const today = new Date();
+    let age = today.getFullYear() - birth.getFullYear();
+    const monthDiff = today.getMonth() - birth.getMonth();
+    
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+      age--;
+    }
+    
+    return age;
+  } catch {
+    return null;
+  }
 }
 
 export function cn(...classes: (string | undefined | null | false)[]): string {
-  return classes.filter(Boolean).join(' ')
-}
-
-export function calculateBMI(peso_kg: number, altezza_cm: number): number {
-  const altezza_m = altezza_cm / 100
-  return Number((peso_kg / (altezza_m * altezza_m)).toFixed(1))
-}
-
-export function calculateAge(dataNascita: Date): number {
-  const oggi = new Date()
-  let eta = oggi.getFullYear() - dataNascita.getFullYear()
-  const m = oggi.getMonth() - dataNascita.getMonth()
-  if (m < 0 || (m === 0 && oggi.getDate() < dataNascita.getDate())) {
-    eta--
-  }
-  return eta
+  return classes.filter(Boolean).join(' ');
 }

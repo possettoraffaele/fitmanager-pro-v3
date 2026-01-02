@@ -1,27 +1,23 @@
 import { NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
+import { createClient } from '@supabase/supabase-js';
 
-// GET - Lista anamnesi o singola anamnesi
+function getSupabaseClient() {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  if (!url || !key) {
+    throw new Error('Variabili Supabase non configurate');
+  }
+  return createClient(url, key);
+}
+
+// GET - Lista anamnesi
 export async function GET(request: Request) {
   try {
+    const supabase = getSupabaseClient();
     const { searchParams } = new URL(request.url);
-    const id = searchParams.get('id');
     const clienteId = searchParams.get('cliente_id');
 
-    if (id) {
-      // Singola anamnesi
-      const { data, error } = await supabase
-        .from('anamnesi')
-        .select('*')
-        .eq('id', id)
-        .single();
-
-      if (error) throw error;
-      return NextResponse.json(data);
-    }
-
     if (clienteId) {
-      // Anamnesi di un cliente
       const { data, error } = await supabase
         .from('anamnesi')
         .select('*')
@@ -32,33 +28,27 @@ export async function GET(request: Request) {
       return NextResponse.json(data || []);
     }
 
-    // Tutte le anamnesi
     const { data, error } = await supabase
       .from('anamnesi')
-      .select(`
-        *,
-        clienti (nome, cognome, email)
-      `)
+      .select(`*, clienti (nome, cognome)`)
       .order('created_at', { ascending: false });
 
     if (error) throw error;
     return NextResponse.json(data || []);
-  } catch (error) {
+  } catch (error: any) {
     console.error('Errore fetch anamnesi:', error);
-    return NextResponse.json({ error: 'Errore server' }, { status: 500 });
+    return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
 
 // POST - Crea nuova anamnesi
 export async function POST(request: Request) {
   try {
+    const supabase = getSupabaseClient();
     const body = await request.json();
 
     if (!body.cliente_id) {
-      return NextResponse.json(
-        { error: 'cliente_id obbligatorio' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'cliente_id obbligatorio' }, { status: 400 });
     }
 
     const { data, error } = await supabase
@@ -67,21 +57,18 @@ export async function POST(request: Request) {
       .select()
       .single();
 
-    if (error) {
-      console.error('Errore creazione anamnesi:', error);
-      return NextResponse.json({ error: error.message }, { status: 500 });
-    }
-
+    if (error) throw error;
     return NextResponse.json(data, { status: 201 });
-  } catch (error) {
-    console.error('Errore API POST anamnesi:', error);
-    return NextResponse.json({ error: 'Errore server' }, { status: 500 });
+  } catch (error: any) {
+    console.error('Errore POST anamnesi:', error);
+    return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
 
 // PUT - Aggiorna anamnesi
 export async function PUT(request: Request) {
   try {
+    const supabase = getSupabaseClient();
     const body = await request.json();
     const { id, ...updates } = body;
 
@@ -98,15 +85,16 @@ export async function PUT(request: Request) {
 
     if (error) throw error;
     return NextResponse.json(data);
-  } catch (error) {
+  } catch (error: any) {
     console.error('Errore PUT anamnesi:', error);
-    return NextResponse.json({ error: 'Errore server' }, { status: 500 });
+    return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
 
 // DELETE - Elimina anamnesi
 export async function DELETE(request: Request) {
   try {
+    const supabase = getSupabaseClient();
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
 
@@ -114,15 +102,11 @@ export async function DELETE(request: Request) {
       return NextResponse.json({ error: 'ID richiesto' }, { status: 400 });
     }
 
-    const { error } = await supabase
-      .from('anamnesi')
-      .delete()
-      .eq('id', id);
-
+    const { error } = await supabase.from('anamnesi').delete().eq('id', id);
     if (error) throw error;
     return NextResponse.json({ success: true });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Errore DELETE anamnesi:', error);
-    return NextResponse.json({ error: 'Errore server' }, { status: 500 });
+    return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }

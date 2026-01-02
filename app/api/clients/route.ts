@@ -1,9 +1,23 @@
 import { NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
+import { createClient } from '@supabase/supabase-js';
+
+// Create Supabase client with validation
+function getSupabaseClient() {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  
+  if (!url || !key) {
+    throw new Error('Variabili Supabase non configurate. Controlla NEXT_PUBLIC_SUPABASE_URL e NEXT_PUBLIC_SUPABASE_ANON_KEY su Vercel');
+  }
+  
+  return createClient(url, key);
+}
 
 // GET - Lista tutti i clienti
 export async function GET() {
   try {
+    const supabase = getSupabaseClient();
+    
     const { data, error } = await supabase
       .from('clienti')
       .select('*')
@@ -11,19 +25,27 @@ export async function GET() {
 
     if (error) {
       console.error('Errore fetch clienti:', error);
-      return NextResponse.json({ error: error.message }, { status: 500 });
+      return NextResponse.json({ 
+        error: error.message,
+        code: error.code,
+        hint: error.hint || 'Verifica che la tabella clienti esista in Supabase'
+      }, { status: 500 });
     }
 
     return NextResponse.json(data || []);
-  } catch (error) {
+  } catch (error: any) {
     console.error('Errore API clienti:', error);
-    return NextResponse.json({ error: 'Errore server' }, { status: 500 });
+    return NextResponse.json({ 
+      error: error.message || 'Errore server',
+      type: 'configuration_error'
+    }, { status: 500 });
   }
 }
 
 // POST - Crea nuovo cliente
 export async function POST(request: Request) {
   try {
+    const supabase = getSupabaseClient();
     const body = await request.json();
     
     const { nome, cognome, email, telefono, data_nascita, sesso, note } = body;
@@ -51,19 +73,25 @@ export async function POST(request: Request) {
 
     if (error) {
       console.error('Errore creazione cliente:', error);
-      return NextResponse.json({ error: error.message }, { status: 500 });
+      return NextResponse.json({ 
+        error: error.message,
+        code: error.code
+      }, { status: 500 });
     }
 
     return NextResponse.json(data, { status: 201 });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Errore API POST clienti:', error);
-    return NextResponse.json({ error: 'Errore server' }, { status: 500 });
+    return NextResponse.json({ 
+      error: error.message || 'Errore server' 
+    }, { status: 500 });
   }
 }
 
 // PUT - Aggiorna cliente
 export async function PUT(request: Request) {
   try {
+    const supabase = getSupabaseClient();
     const body = await request.json();
     const { id, ...updates } = body;
 
@@ -80,19 +108,25 @@ export async function PUT(request: Request) {
 
     if (error) {
       console.error('Errore aggiornamento cliente:', error);
-      return NextResponse.json({ error: error.message }, { status: 500 });
+      return NextResponse.json({ 
+        error: error.message,
+        code: error.code
+      }, { status: 500 });
     }
 
     return NextResponse.json(data);
-  } catch (error) {
+  } catch (error: any) {
     console.error('Errore API PUT clienti:', error);
-    return NextResponse.json({ error: 'Errore server' }, { status: 500 });
+    return NextResponse.json({ 
+      error: error.message || 'Errore server' 
+    }, { status: 500 });
   }
 }
 
 // DELETE - Elimina cliente
 export async function DELETE(request: Request) {
   try {
+    const supabase = getSupabaseClient();
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
 
@@ -107,12 +141,17 @@ export async function DELETE(request: Request) {
 
     if (error) {
       console.error('Errore eliminazione cliente:', error);
-      return NextResponse.json({ error: error.message }, { status: 500 });
+      return NextResponse.json({ 
+        error: error.message,
+        code: error.code
+      }, { status: 500 });
     }
 
     return NextResponse.json({ success: true });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Errore API DELETE clienti:', error);
-    return NextResponse.json({ error: 'Errore server' }, { status: 500 });
+    return NextResponse.json({ 
+      error: error.message || 'Errore server' 
+    }, { status: 500 });
   }
 }

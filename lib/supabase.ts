@@ -1,13 +1,46 @@
-import { createClient } from '@supabase/supabase-js';
+import { createClient, SupabaseClient } from '@supabase/supabase-js';
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
 
-if (!supabaseUrl || !supabaseAnonKey) {
-  console.error('Supabase credentials mancanti!');
+// Validate environment variables
+export function validateSupabaseConfig(): { valid: boolean; error?: string } {
+  if (!supabaseUrl) {
+    return { valid: false, error: 'NEXT_PUBLIC_SUPABASE_URL non configurato' };
+  }
+  if (!supabaseAnonKey) {
+    return { valid: false, error: 'NEXT_PUBLIC_SUPABASE_ANON_KEY non configurato' };
+  }
+  if (!supabaseUrl.includes('supabase.co')) {
+    return { valid: false, error: 'NEXT_PUBLIC_SUPABASE_URL non valido' };
+  }
+  return { valid: true };
 }
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+// Create client only if config is valid
+let supabaseInstance: SupabaseClient | null = null;
+
+export function getSupabase(): SupabaseClient {
+  if (!supabaseInstance) {
+    const config = validateSupabaseConfig();
+    if (!config.valid) {
+      throw new Error(config.error || 'Configurazione Supabase non valida');
+    }
+    supabaseInstance = createClient(supabaseUrl, supabaseAnonKey);
+  }
+  return supabaseInstance;
+}
+
+// Export for backward compatibility - but will throw if config invalid
+export const supabase = (() => {
+  try {
+    return getSupabase();
+  } catch {
+    // Return a dummy client that will fail gracefully
+    console.error('⚠️ Supabase non configurato correttamente');
+    return createClient('https://placeholder.supabase.co', 'placeholder-key');
+  }
+})();
 
 // Helper functions per le operazioni CRUD
 
