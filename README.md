@@ -1,270 +1,182 @@
-# 🏋️ FitManager Pro v3.0 
+# 🏋️ FitManager Pro v4.0
 
-## ✨ Nuovo in v3.0
+Sistema completo di gestione clienti per personal trainer con generazione AI di programmi di allenamento.
 
-✅ **Gestione Misurazioni Bioimpedenziometriche**
-- Peso, massa grassa %, massa muscolare %, acqua corporea %
-- Circonferenze corporee complete  
-- Plicometria e foto progresso
-- Grafici trend evoluzione
-- Comparazione misurazioni tra fasi programma
+![Next.js](https://img.shields.io/badge/Next.js-14-black)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.3-blue)
+![Supabase](https://img.shields.io/badge/Supabase-Database-green)
+![Claude AI](https://img.shields.io/badge/Claude-AI-purple)
 
-✅ **Tutti gli Errori Corretti**
-- Nomi tabelle in italiano
-- Error handling robusto
-- Validazione completa
-- Performance ottimizzate
+## ✨ Funzionalità
 
-✅ **Integrazione AI Potenziata**
-- Dati biometrici inclusi nel prompt Claude
-- Suggerimenti personalizzati basati su trend
-- Adattamento programmi in base a risultati
+- **📋 Gestione Clienti**: CRUD completo con ricerca e filtri
+- **📝 Anamnesi Psicofisica**: Form completo a 9 sezioni per raccolta dati cliente
+- **📊 Misurazioni Bioimpedenziometriche**: Tracking parametri Feelfit (12 metriche)
+- **🤖 Generazione AI**: Creazione programmi personalizzati con Claude AI
+- **💪 Programmi**: Gestione schede base e periodizzate (4 fasi)
+- **🎨 Design Professionale**: Tema blu, responsive, ottimizzato per iPad
 
----
+## 🚀 Quick Start
 
-## 🚀 Setup Rapido (da iPad/PC)
-
-### 1. **Database Supabase**
+### 1. Clona il repository
 
 ```bash
-# Vai su supabase.com/dashboard
-# Crea nuovo progetto o usa esistente
-# SQL Editor → New Query
-# Copia e incolla tutto il contenuto di schema.sql
-# Run
+git clone https://github.com/tuousername/fitmanager-pro.git
+cd fitmanager-pro
 ```
 
-### 2. **GitHub (Nuovo Repository)**
+### 2. Installa le dipendenze
 
 ```bash
-# Opzione A: Da Working Copy (iPad)
-1. Estrai l'archivio fitmanager-pro-v3.tar.gz
-2. Working Copy → + → Import Repository
-3. Seleziona la cartella estratta
-4. Create new repository su GitHub
-5. Push
-
-# Opzione B: Da Browser
-1. GitHub.com → New Repository → "fitmanager-pro-v3"
-2. Upload tutti i file dalla cartella estratta
-3. Commit
+npm install
 ```
 
-### 3. **Vercel (Nuovo Progetto)**
+### 3. Configura Supabase
+
+1. Crea un nuovo progetto su [supabase.com](https://supabase.com)
+2. Vai su **SQL Editor** e esegui il contenuto di `database-schema.sql`
+3. Copia l'URL e la chiave Anon da **Settings > API**
+
+### 4. Configura le variabili d'ambiente
+
+Crea un file `.env.local`:
+
+```env
+NEXT_PUBLIC_SUPABASE_URL=https://xxxxx.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJxxxxx
+ANTHROPIC_API_KEY=sk-ant-xxxxx
+APP_PASSWORD=TuaPasswordSicura123!
+```
+
+### 5. Avvia in sviluppo
 
 ```bash
-# Vai su vercel.com/dashboard
-# New Project
-# Import da GitHub → Seleziona "fitmanager-pro-v3"
-# Framework Preset: Next.js
-# Environment Variables → Aggiungi:
+npm run dev
 ```
 
-**Environment Variables Obbligatorie:**
-```
-NEXT_PUBLIC_SUPABASE_URL=https://koqfqraimwhambbbisnl.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=[tua-chiave-da-supabase]
-ANTHROPIC_API_KEY=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
-APP_PASSWORD=ShakalakaA1.!
-```
-
-```bash
-# Deploy!
-```
-
----
-
-## 📊 Nuove Funzionalità Bioimpedenziometria
-
-### Tabella Misurazioni
-
-La nuova tabella `misurazioni` include:
-
-**Composizione Corporea:**
-- Peso (kg)
-- Massa grassa (%)
-- Massa magra (kg)
-- Massa muscolare (%)
-- Acqua corporea (%)
-- Metabolismo basale (kcal)
-
-**Circonferenze (cm):**
-- Petto, vita, fianchi
-- Cosce (dx/sx)
-- Braccia (dx/sx)
-- Polpacci (dx/sx)
-
-**Plicometria (mm):**
-- Tricipitale
-- Sottoscapolare
-- Sovrailiaca
-- Addominale
-
-**Tracking:**
-- Fase programma (PRE, FASE_1-4, POST)
-- Note
-- Foto progresso (fronte/lato/retro)
-- Referto PDF
-
-### API Endpoints
-
-```typescript
-// GET /api/misurazioni?cliente_id=xxx
-// GET /api/misurazioni/[id]
-// POST /api/misurazioni
-// PUT /api/misurazioni/[id]
-// DELETE /api/misurazioni/[id]
-```
-
-### Esempio Utilizzo
-
-```typescript
-// Creare misurazione
-const nuovaMisurazione = {
-  cliente_id: 'uuid-cliente',
-  data_misurazione: '2025-01-15',
-  fase_programma: 'PRE',
-  peso_kg: 75.5,
-  massa_grassa_perc: 18.5,
-  circonferenza_vita_cm: 82,
-  // ... altri campi
-}
-
-const res = await fetch('/api/misurazioni', {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify(nuovaMisurazione)
-})
-```
-
----
+Apri [http://localhost:3000](http://localhost:3000)
 
 ## 📁 Struttura Progetto
 
 ```
-fitmanager-pro-v3/
+fitmanager-pro-v4/
 ├── app/
-│   ├── auth/              # Login
-│   ├── dashboard/         # Dashboard principale
-│   │   ├── clients/       # Gestione clienti
-│   │   ├── misurazioni/   # 🆕 Gestione misurazioni
-│   │   ├── anamnesi/      # Anamnesi
-│   │   ├── generate/      # Generazione AI programmi
-│   │   └── programmi/     # Gestione programmi
 │   ├── api/
-│   │   ├── auth/          # Autenticazione
-│   │   ├── clients/       # CRUD clienti
-│   │   ├── misurazioni/   # 🆕 CRUD misurazioni
-│   │   ├── anamnesi/      # CRUD anamnesi
-│   │   ├── programmi/     # CRUD programmi
-│   │   └── generate/      # Claude API
-│   ├── layout.tsx
-│   └── globals.css
+│   │   ├── auth/route.ts         # Autenticazione
+│   │   ├── clients/route.ts      # CRUD clienti
+│   │   ├── anamnesi/route.ts     # CRUD anamnesi
+│   │   ├── misurazioni/route.ts  # CRUD misurazioni
+│   │   ├── programmi/route.ts    # CRUD programmi
+│   │   └── generate/route.ts     # Generazione AI
+│   ├── auth/page.tsx             # Login page
+│   ├── dashboard/
+│   │   ├── layout.tsx            # Layout con sidebar
+│   │   ├── page.tsx              # Dashboard home
+│   │   ├── clients/page.tsx      # Gestione clienti
+│   │   ├── anamnesi/page.tsx     # Form anamnesi
+│   │   ├── misurazioni/page.tsx  # Tracking misure
+│   │   ├── programmi/page.tsx    # Lista programmi
+│   │   └── generate/page.tsx     # Wizard AI
+│   ├── globals.css               # Stili globali
+│   ├── layout.tsx                # Root layout
+│   └── page.tsx                  # Redirect
 ├── components/
 │   └── dashboard/
-│       ├── Sidebar.tsx
-│       ├── StatsCard.tsx
-│       └── MisurazioniChart.tsx  # 🆕 Grafici
+│       └── Sidebar.tsx           # Navigazione
 ├── lib/
-│   ├── supabase.ts
-│   ├── utils.ts
-│   └── claude-api.ts
+│   ├── supabase.ts               # Client Supabase
+│   └── prompts.ts                # Template AI
 ├── types/
-│   └── database.types.ts   # Include interfaccia Misurazione
-├── schema.sql              # Schema completo con misurazioni
-└── README.md
+│   └── database.types.ts         # TypeScript interfaces
+├── database-schema.sql           # Schema Supabase
+├── package.json
+├── tailwind.config.ts
+└── tsconfig.json
 ```
 
----
+## 🔐 Autenticazione
 
-## 🔧 Estendere il Progetto
+L'app usa un sistema di autenticazione semplice basato su password:
 
-### Creare Pagina Misurazioni
+1. La password è definita in `APP_PASSWORD`
+2. Il login salva un token in localStorage
+3. Le route dashboard sono protette
 
-```typescript
-// app/dashboard/misurazioni/page.tsx
-'use client'
+**Per produzione**: considera di implementare Supabase Auth per una gestione utenti completa.
 
-import { useState, useEffect } from 'react'
-import { Misurazione } from '@/types/database.types'
+## 🤖 Generazione AI
 
-export default function MisurazioniPage() {
-  const [misurazioni, setMisurazioni] = useState<Misurazione[]>([])
-  
-  useEffect(() => {
-    loadMisurazioni()
-  }, [])
-  
-  const loadMisurazioni = async () => {
-    const res = await fetch('/api/misurazioni')
-    const data = await res.json()
-    setMisurazioni(Array.isArray(data) ? data : [])
-  }
-  
-  return (
-    <div>
-      <h1>Misurazioni Bioimpedenziometriche</h1>
-      {/* UI qui */}
-    </div>
-  )
-}
-```
+### Tipi di Programma
 
-### Grafici con Recharts
+1. **Base**: Scheda singola per 4-12 settimane
+2. **Periodizzato**: 4 fasi progressive (Adattamento → Ipertrofia → Forza → Peak)
 
-```typescript
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts'
+### Flusso di Generazione
 
-<LineChart width={600} height={300} data={misurazioni}>
-  <CartesianGrid strokeDasharray="3 3" />
-  <XAxis dataKey="data_misurazione" />
-  <YAxis />
-  <Tooltip />
-  <Legend />
-  <Line type="monotone" dataKey="peso_kg" stroke="#3b82f6" name="Peso" />
-  <Line type="monotone" dataKey="massa_grassa_perc" stroke="#ef4444" name="Massa Grassa %" />
-</LineChart>
-```
+1. Seleziona cliente e anamnesi
+2. Scegli tipo programma
+3. Aggiungi istruzioni (opzionale)
+4. Chatta con l'AI per raffinare
+5. Copia JSON o salva nel database
 
----
+### Template AI
 
-## ✅ Checklist Primo Avvio
+I template (preamboli) sono in `/lib/prompts.ts` e contengono:
+- Istruzioni metodologiche
+- Struttura JSON richiesta
+- Regole per serie speciali
+- Gestione tempi allenamento
 
-- [ ] Database schema eseguito su Supabase
-- [ ] Environment variables configurate su Vercel
-- [ ] Repository GitHub creato e pushato
-- [ ] Progetto Vercel collegato e deployato
-- [ ] Login funzionante con password `ShakalakaA1.!`
-- [ ] Dashboard accessibile
-- [ ] Clienti CRUD funzionante
-- [ ] API Misurazioni testata
+## 📊 Misurazioni Feelfit
 
----
+Parametri tracciati dalla bilancia bioimpedenziometrica:
 
-## 🆘 Troubleshooting
+| Parametro | Unità |
+|-----------|-------|
+| Peso | kg |
+| Grasso corporeo | % |
+| BMI | - |
+| Muscolo scheletrico | % |
+| Massa muscolare | kg |
+| Proteine | % |
+| Metabolismo basale | kcal |
+| Grasso viscerale | livello |
+| Idratazione | % |
+| Massa ossea | kg |
+| Età metabolica | anni |
 
-### Errore 500 alle API
-- Verifica environment variables su Vercel
-- Controlla che le tabelle esistano su Supabase
-- Redeploy dopo modifiche env vars
+## 🚢 Deploy su Vercel
 
-### Errore "relation does not exist"
-- Esegui schema.sql su Supabase SQL Editor
-- Verifica nomi tabelle (devono essere in italiano)
+1. Push del repository su GitHub
+2. Importa su [vercel.com](https://vercel.com)
+3. Configura le variabili d'ambiente:
+   - `NEXT_PUBLIC_SUPABASE_URL`
+   - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+   - `ANTHROPIC_API_KEY`
+   - `APP_PASSWORD`
+4. Deploy!
 
-### Build fallito su Vercel
-- Verifica che Framework Preset sia "Next.js"
-- Output Directory deve essere VUOTO
-- npm run build deve funzionare localmente
+## 📱 Ottimizzazione Mobile
 
----
+L'app è ottimizzata per iPad e dispositivi mobile:
+- Layout responsive
+- Touch-friendly
+- Sidebar collassabile
+- Form ottimizzati per touch
 
-## 📞 Contatti
+## 🛠️ Tecnologie
 
-**Raffaele Possetto**  
-Email: possettoraffaele2@gmail.com  
-Telefono: 3757353820
+- **Frontend**: Next.js 14, React 18, TypeScript
+- **Styling**: Tailwind CSS
+- **Database**: Supabase (PostgreSQL)
+- **AI**: Anthropic Claude API
+- **Icons**: Lucide React
+- **Charts**: Recharts (per grafici futuri)
+
+## 📄 Licenza
+
+Questo progetto è privato. Tutti i diritti riservati.
 
 ---
 
-**FitManager Pro v3.0** - Il tuo gestionale PT completo con AI! 💪
+Sviluppato con ❤️ per Personal Trainer

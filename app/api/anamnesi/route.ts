@@ -1,67 +1,85 @@
 import { NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
 
-// GET - Lista tutti i clienti
-export async function GET() {
+// GET - Lista anamnesi o singola anamnesi
+export async function GET(request: Request) {
   try {
-    const { data, error } = await supabase
-      .from('clienti')
-      .select('*')
-      .order('cognome', { ascending: true });
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get('id');
+    const clienteId = searchParams.get('cliente_id');
 
-    if (error) {
-      console.error('Errore fetch clienti:', error);
-      return NextResponse.json({ error: error.message }, { status: 500 });
+    if (id) {
+      // Singola anamnesi
+      const { data, error } = await supabase
+        .from('anamnesi')
+        .select('*')
+        .eq('id', id)
+        .single();
+
+      if (error) throw error;
+      return NextResponse.json(data);
     }
 
+    if (clienteId) {
+      // Anamnesi di un cliente
+      const { data, error } = await supabase
+        .from('anamnesi')
+        .select('*')
+        .eq('cliente_id', clienteId)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      return NextResponse.json(data || []);
+    }
+
+    // Tutte le anamnesi
+    const { data, error } = await supabase
+      .from('anamnesi')
+      .select(`
+        *,
+        clienti (nome, cognome, email)
+      `)
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
     return NextResponse.json(data || []);
   } catch (error) {
-    console.error('Errore API clienti:', error);
+    console.error('Errore fetch anamnesi:', error);
     return NextResponse.json({ error: 'Errore server' }, { status: 500 });
   }
 }
 
-// POST - Crea nuovo cliente
+// POST - Crea nuova anamnesi
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    
-    const { nome, cognome, email, telefono, data_nascita, sesso, note } = body;
 
-    if (!nome || !cognome || !email) {
+    if (!body.cliente_id) {
       return NextResponse.json(
-        { error: 'Nome, cognome e email sono obbligatori' },
+        { error: 'cliente_id obbligatorio' },
         { status: 400 }
       );
     }
 
     const { data, error } = await supabase
-      .from('clienti')
-      .insert([{
-        nome,
-        cognome,
-        email,
-        telefono: telefono || null,
-        data_nascita: data_nascita || null,
-        sesso: sesso || null,
-        note: note || null
-      }])
+      .from('anamnesi')
+      .insert([body])
       .select()
       .single();
 
     if (error) {
-      console.error('Errore creazione cliente:', error);
+      console.error('Errore creazione anamnesi:', error);
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
     return NextResponse.json(data, { status: 201 });
   } catch (error) {
-    console.error('Errore API POST clienti:', error);
+    console.error('Errore API POST anamnesi:', error);
     return NextResponse.json({ error: 'Errore server' }, { status: 500 });
   }
 }
 
-// PUT - Aggiorna cliente
+// PUT - Aggiorna anamnesi
 export async function PUT(request: Request) {
   try {
     const body = await request.json();
@@ -72,25 +90,21 @@ export async function PUT(request: Request) {
     }
 
     const { data, error } = await supabase
-      .from('clienti')
+      .from('anamnesi')
       .update({ ...updates, updated_at: new Date().toISOString() })
       .eq('id', id)
       .select()
       .single();
 
-    if (error) {
-      console.error('Errore aggiornamento cliente:', error);
-      return NextResponse.json({ error: error.message }, { status: 500 });
-    }
-
+    if (error) throw error;
     return NextResponse.json(data);
   } catch (error) {
-    console.error('Errore API PUT clienti:', error);
+    console.error('Errore PUT anamnesi:', error);
     return NextResponse.json({ error: 'Errore server' }, { status: 500 });
   }
 }
 
-// DELETE - Elimina cliente
+// DELETE - Elimina anamnesi
 export async function DELETE(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
@@ -101,18 +115,14 @@ export async function DELETE(request: Request) {
     }
 
     const { error } = await supabase
-      .from('clienti')
+      .from('anamnesi')
       .delete()
       .eq('id', id);
 
-    if (error) {
-      console.error('Errore eliminazione cliente:', error);
-      return NextResponse.json({ error: error.message }, { status: 500 });
-    }
-
+    if (error) throw error;
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error('Errore API DELETE clienti:', error);
+    console.error('Errore DELETE anamnesi:', error);
     return NextResponse.json({ error: 'Errore server' }, { status: 500 });
   }
 }

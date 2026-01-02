@@ -1,195 +1,189 @@
+// Database Types per FitManager Pro v4
+
 export interface Cliente {
-  id: string
-  nome: string
-  cognome: string
-  email?: string
-  telefono?: string
-  data_nascita?: string
-  sesso?: 'M' | 'F'
-  note?: string
-  attivo: boolean
-  created_at: string
-  updated_at: string
+  id: string;
+  nome: string;
+  cognome: string;
+  email: string;
+  telefono?: string;
+  data_nascita?: string;
+  sesso?: 'M' | 'F';
+  note?: string;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface Anamnesi {
-  id: string
-  cliente_id: string
-  token: string
-  compilato: boolean
+  id: string;
+  cliente_id: string;
   
-  // Sezione 0
-  tipo_cliente?: string
-  conclusione_ultimo_programma?: string
-  durata_programma_precedente?: string
-  efficacia_programma_voto?: number
-  aspetti_positivi?: string[]
-  modifiche_desiderate?: string
-  esercizi_problematici?: string
-  risultati_ottenuti?: string
-  cambiamenti_situazione?: string
+  // Sezione 0: Tipo Cliente
+  tipo_cliente: 'nuovo' | 'ricorrente';
+  conclusione_ultimo_programma?: string;
+  durata_programma_precedente?: string;
+  efficacia_programma_precedente?: number;
+  aspetti_positivi_precedente?: string[];
+  modifiche_desiderate?: string;
+  esercizi_problematici?: string;
+  risultati_ottenuti?: string;
+  cambiamenti_situazione?: string;
   
-  // Sezione 1
-  altezza_cm?: number
-  peso_kg?: number
-  professione?: string
+  // Sezione 1: Informazioni Personali
+  nome_cognome: string;
+  email: string;
+  telefono?: string;
+  data_nascita: string;
+  sesso_biologico: 'Maschio' | 'Femmina';
+  professione: string;
   
-  // Sezione 2
-  forma_fisica_voto?: number
+  // Sezione 2: Caratteristiche Fisiche
+  altezza_cm: number;
+  peso_kg: number;
+  forma_fisica_voto: number;
   
-  // Sezione 3
-  allenamenti_fissi_settimana?: number
-  allenamenti_facoltativi_settimana?: number
-  giorni_fissi_specifici?: string[]
-  giorni_facoltativi_specifici?: string[]
-  durata_sessione_minuti?: number
-  orario_allenamento?: string
+  // Sezione 3: Modalità di Allenamento
+  allenamenti_fissi_settimana: number;
+  allenamenti_facoltativi_settimana: number;
+  giorni_fissi_specifici?: string[];
+  giorni_facoltativi_specifici?: string[];
+  durata_sessione_minuti: number;
+  orario_allenamento: string;
+  mobilita_pre: boolean;
+  stretching_post: boolean;
   
-  // Sezione 4
-  livello_esperienza?: string
-  sport_passato?: boolean
-  sport_passato_dettagli?: string
-  sport_attuale?: boolean
-  sport_attuale_dettagli?: string
-  massimali_attuali?: string
+  // Sezione 4: Esperienza Sportiva
+  livello_esperienza: string;
+  sport_passato: boolean;
+  sport_passato_dettagli?: string;
+  sport_attuale: boolean;
+  sport_attuale_dettagli?: string;
+  massimali_attuali?: string;
   
-  // Sezione 5
-  presenza_dolori?: boolean
-  descrizione_dolori?: string
-  storia_infortuni?: boolean
-  dettagli_infortuni?: string
-  patologie?: string[]
-  altre_patologie_dettagli?: string
-  farmaci_regolari?: string
-  qualita_sonno_voto?: number
-  ore_sonno_media?: string
-  livello_stress_voto?: number
+  // Sezione 5: Salute e Benessere
+  presenza_dolori: boolean;
+  descrizione_dolori?: string;
+  storia_infortuni: boolean;
+  dettagli_infortuni?: string;
+  patologie: string[];
+  altre_patologie_dettagli?: string;
+  farmaci_regolari?: string;
+  qualita_sonno_voto: number;
+  ore_sonno_media: string;
+  livello_stress_voto: number;
   
-  // Sezione 6
-  obiettivo_principale?: string
-  obiettivo_secondario?: string
-  obiettivi_specifici_dettagli?: string
-  tempistica_obiettivo?: string
-  motivazione_voto?: number
+  // Sezione 6: Obiettivi
+  obiettivo_principale: string;
+  obiettivo_secondario?: string;
+  obiettivi_specifici_dettagli?: string;
+  tempistica_obiettivo: string;
+  motivazione_voto: number;
   
-  // Sezione 7
-  esercizi_preferiti?: string
-  esercizi_da_evitare?: string
-  focus_gruppi_muscolari?: string
+  // Sezione 7: Preferenze
+  esercizi_preferiti?: string;
+  esercizi_da_evitare?: string;
+  focus_gruppi_muscolari?: string;
   
-  // Sezione 8
-  note_aggiuntive?: string
-  domande_al_trainer?: string
+  // Sezione 8: Note
+  note_aggiuntive?: string;
+  domande_al_trainer?: string;
   
-  created_at: string
-  updated_at: string
+  created_at: string;
+  updated_at: string;
 }
 
-// 🆕 Interfaccia Misurazione Bioimpedenziometrica - COMPLETA FEELFIT
 export interface Misurazione {
-  id: string
-  cliente_id: string
-  programma_id?: string
+  id: string;
+  cliente_id: string;
+  programma_id?: string;
+  data_misurazione: string;
+  fase_programma?: string;
   
-  // Data e Fase
-  data_misurazione: string
-  fase_programma?: 'PRE' | 'FASE_1' | 'FASE_2' | 'FASE_3' | 'FASE_4' | 'POST'
+  // Parametri Feelfit
+  peso_kg: number;
+  grasso_percentuale?: number;
+  bmi?: number;
+  muscolo_scheletrico_percentuale?: number;
+  massa_muscolare_kg?: number;
+  proteine_percentuale?: number;
+  metabolismo_basale_kcal?: number;
+  grasso_viscerale_livello?: number;
+  idratazione_percentuale?: number;
+  massa_ossea_kg?: number;
+  eta_metabolica?: number;
   
-  // Peso e Composizione Corporea (Feelfit)
-  peso_kg: number
-  massa_grassa_perc?: number
-  massa_magra_kg?: number
-  massa_muscolare_perc?: number
-  massa_muscolare_kg?: number
-  muscolo_scheletrico_perc?: number
-  acqua_corporea_perc?: number
-  metabolismo_basale_kcal?: number
-  bmi?: number
-  livello_capacita_stoccaggio?: number
-  proteine_perc?: number
-  grasso_addominale_livello?: number
-  massa_ossea_kg?: number
-  eta_metabolica?: number
+  // Foto Pose
+  foto_laterale_sx?: string;
+  foto_laterale_dx?: string;
+  foto_frontale_rilassato?: string;
+  foto_posteriore_rilassato?: string;
+  foto_frontale_doppio_bicipite?: string;
+  foto_posteriore_lat_spread?: string;
   
-  // Circonferenze (cm)
-  circonferenza_petto_cm?: number
-  circonferenza_vita_cm?: number
-  circonferenza_fianchi_cm?: number
-  circonferenza_coscia_dx_cm?: number
-  circonferenza_coscia_sx_cm?: number
-  circonferenza_braccio_dx_cm?: number
-  circonferenza_braccio_sx_cm?: number
-  circonferenza_polpaccio_dx_cm?: number
-  circonferenza_polpaccio_sx_cm?: number
-  
-  // Plicometria (mm)
-  plica_tricipitale_mm?: number
-  plica_sottoscapolare_mm?: number
-  plica_sovrailiaca_mm?: number
-  plica_addominale_mm?: number
-  
-  // Foto Poses (6 foto bodybuilding standard)
-  foto_laterale_sx_url?: string
-  foto_laterale_dx_url?: string
-  foto_frontale_rilassata_url?: string
-  foto_posteriore_rilassata_url?: string
-  foto_frontale_bicipite_url?: string
-  foto_posteriore_latspread_url?: string
-  
-  // Note e Allegati
-  note?: string
-  referto_pdf_url?: string
-  
-  created_at: string
-  updated_at: string
+  note?: string;
+  created_at: string;
 }
 
 export interface Programma {
-  id: string
-  cliente_id: string
-  anamnesi_id?: string
-  misurazione_iniziale_id?: string
+  id: string;
+  cliente_id: string;
+  anamnesi_id?: string;
+  misurazione_iniziale_id?: string;
   
-  tipo: 'BASE' | 'PERIODIZZATO'
-  stato: 'BOZZA' | 'IN_REVISIONE' | 'APPROVATO' | 'ATTIVO' | 'COMPLETATO'
+  nome: string;
+  tipo: 'base' | 'periodizzato';
+  stato: 'bozza' | 'attivo' | 'completato' | 'archiviato';
   
-  prompt_generato?: string
-  risposta_ai?: string
-  richieste_modifica?: string[]
+  data_inizio: string;
+  data_fine?: string;
   
-  struttura?: any
+  // Contenuto programma (JSON)
+  contenuto_json?: string;
+  fase_corrente?: number;
   
-  data_inizio?: string
-  data_fine?: string
-  data_prevista_pesata?: string
-  
-  created_at: string
-  updated_at: string
+  note?: string;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface SessioneAllenamento {
-  id: string
-  programma_id: string
-  cliente_id: string
+  id: string;
+  programma_id: string;
+  cliente_id: string;
   
-  giorno: string
-  data_completamento?: string
+  giorno_settimana: string;
+  data_esecuzione?: string;
+  completata: boolean;
   
-  esercizi_completati?: any
-  pesi_utilizzati?: any
-  note?: string
-  durata_minuti?: number
+  // Dati sessione (JSON con esercizi, carichi usati, ecc.)
+  dati_json?: string;
+  note?: string;
   
-  created_at: string
+  created_at: string;
 }
 
-// Helper Types
-export interface MisurazioneConCliente extends Misurazione {
-  cliente: Cliente
+// API Response Types
+export interface ApiResponse<T> {
+  data?: T;
+  error?: string;
+  message?: string;
 }
 
-export interface ProgrammaConRelazioni extends Programma {
-  cliente: Cliente
-  anamnesi?: Anamnesi
-  misurazione_iniziale?: Misurazione
+// Form Types per Anamnesi
+export interface AnamnesiFormData {
+  // Tutte le sezioni del form
+  [key: string]: string | number | boolean | string[] | undefined;
+}
+
+// Programma Generation Types
+export interface GenerateProgrammaRequest {
+  cliente_id: string;
+  anamnesi_id: string;
+  tipo_programma: 'base' | 'periodizzato';
+  note_aggiuntive?: string;
+}
+
+export interface GenerateProgrammaResponse {
+  programma_json: string;
+  analisi: string;
+  tabelle: string;
 }

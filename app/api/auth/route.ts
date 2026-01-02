@@ -1,29 +1,32 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server';
 
-export async function POST(request: NextRequest) {
+export async function POST(request: Request) {
   try {
-    const { password } = await request.json()
-    const correctPassword = process.env.APP_PASSWORD || 'ShakalakaA1.!'
+    const { password } = await request.json();
     
-    if (password === correctPassword) {
-      const response = NextResponse.json({ success: true })
-      response.cookies.set('auth', 'true', {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'lax',
-        maxAge: 60 * 60 * 24 * 7 // 7 giorni
-      })
-      return response
+    const APP_PASSWORD = process.env.APP_PASSWORD;
+    
+    if (!APP_PASSWORD) {
+      console.error('APP_PASSWORD non configurata');
+      return NextResponse.json(
+        { error: 'Configurazione server mancante' },
+        { status: 500 }
+      );
     }
     
-    return NextResponse.json({ error: 'Password errata' }, { status: 401 })
+    if (password === APP_PASSWORD) {
+      return NextResponse.json({ success: true });
+    } else {
+      return NextResponse.json(
+        { error: 'Password non corretta' },
+        { status: 401 }
+      );
+    }
   } catch (error) {
-    return NextResponse.json({ error: 'Errore server' }, { status: 500 })
+    console.error('Errore auth:', error);
+    return NextResponse.json(
+      { error: 'Errore durante l\'autenticazione' },
+      { status: 500 }
+    );
   }
-}
-
-export async function DELETE(request: NextRequest) {
-  const response = NextResponse.json({ success: true })
-  response.cookies.delete('auth')
-  return response
 }
